@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.license      = "MIT"
   s.author       = { "Zhigang Fang" => "zhigang1992@gmail.com" }
   s.platform     = :ios, "9.0"
-  s.source       = { :git => "https://github.com/tappollo/OSCKit.git" }
+  s.source       = { :git => "https://github.com/tappollo/OSCKit.git", :tag => :tag => s.version }
   s.source_files  = "Source/*.swift"
   s.frameworks = "SystemConfiguration"
   s.dependency 'SwiftyyJSON'
