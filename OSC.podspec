@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 
-  s.name         = "OSCKit"
+  s.name         = "OSC"
   s.version      = "0.0.2"
   s.summary      = "Richo OSCKit"
   s.description  = "Richo OSCKit with Promise"
