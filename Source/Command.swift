@@ -15,7 +15,7 @@ enum Command {
     case startSession
     case updateSession(sessionId: String)
     case closeSession(sessionId: String)
-    case _finishWlan
+    case _finishWlan(sessionId: String)
     case takePicture(sessionId: String)
     case _startCapture(sessionId: String, mode: VideoCaptureMode)
     case _stopCapture(sessionId: String)
@@ -103,6 +103,7 @@ extension Command {
                 "options": json.value ?? NSNull()
             ])
         case ._getLivePreview(sessionId: let id): return with(params: ["sessionId": id])
+        case ._finishWlan(sessionId: let id): return with(params: ["sessionId": id])
         default: return defaultJSON
         }
     }

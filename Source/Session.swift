@@ -65,5 +65,12 @@ extension OSCKit {
             }
         }
     }
+
+    public func end() -> Promise<Void> {
+        return async {
+            let session = try await(self.session)
+            try await(self.execute(command: ._finishWlan(sessionId: session.id)))
+        }
+    }
 }
 

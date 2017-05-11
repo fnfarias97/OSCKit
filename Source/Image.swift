@@ -44,11 +44,18 @@ extension OSCKit {
         }
     }
 
-    public func takePicture() -> Promise<String> {
+    public func prepareToCapturePhoto() -> Promise<Void> {
         return async {
             let session = try await(self.session)
             try await(self.execute(command: .setOptions(options: [CaptureMode.image], sessionId: session.id)))
             try await(self.execute(command: .setOptions(options: [FileFormat.smallImage], sessionId: session.id)))
+        }
+    }
+
+    public func takePicture() -> Promise<String> {
+        return async {
+            try await(self.prepareToCapturePhoto())
+            let session = try await(self.session)
             let captureResponse = try await(self.execute(command: .takePicture(sessionId: session.id)))
             let statusID = try captureResponse["id"].string !! SDKError.unableToParse(captureResponse)
             let statusResponse = try await(self.waitForStatus(id: statusID))
