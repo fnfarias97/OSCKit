@@ -1,0 +1,36 @@
+PODS:
+  - AwaitKit (3.0.0):
+    - PromiseKit (~> 4.1)
+  - OSC (0.0.2):
+    - AwaitKit
+    - PromiseKit
+    - SwiftyyJSON
+  - PromiseKit (4.2.0):
+    - PromiseKit/Foundation (= 4.2.0)
+    - PromiseKit/QuartzCore (= 4.2.0)
+    - PromiseKit/UIKit (= 4.2.0)
+  - PromiseKit/CorePromise (4.2.0)
+  - PromiseKit/Foundation (4.2.0):
+    - PromiseKit/CorePromise
+  - PromiseKit/QuartzCore (4.2.0):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (4.2.0):
+    - PromiseKit/CorePromise
+  - SwiftyyJSON (1.0.3)
+
+DEPENDENCIES:
+  - OSC (from `../`)
+
+EXTERNAL SOURCES:
+  OSC:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  AwaitKit: c469875701a000d6932dc2ec818719967e43be56
+  OSC: 35daf69b423624d30355c52d2b1f083b96d2c102
+  PromiseKit: '08dfb783c161ddcd95b7912421f14c5113fd8318'
+  SwiftyyJSON: ef3d37d200fec7a019c61f8da2a50e873c78dd05
+
+PODFILE CHECKSUM: c901d07026a93aee57e22d70e10a408b2e8482bc
+
+COCOAPODS: 1.2.1
