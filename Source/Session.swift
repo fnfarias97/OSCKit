@@ -14,6 +14,7 @@ import AwaitKit
 public struct Session {
     let id: String
     let expires: Date
+    let issued: Date
 
     fileprivate static var currentSession: Session?
 
@@ -21,6 +22,7 @@ public struct Session {
         self.id = try json["results"]["sessionId"].string !! OSCKit.SDKError.unableToParse(json)
         let expire = try json["results"]["timeout"].int !! OSCKit.SDKError.unableToParse(json)
         self.expires = Date().addingTimeInterval(TimeInterval(expire))
+        self.issued = Date()
     }
 
     var isExpired: Bool {
@@ -28,7 +30,7 @@ public struct Session {
     }
 
     var wasJustedIssued: Bool {
-        return self.expires.addingTimeInterval(10) > Date()
+        return self.issued.addingTimeInterval(10) > Date()
     }
 }
 
