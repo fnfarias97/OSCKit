@@ -26,7 +26,8 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
     private var receivedData: NSMutableData?
     private var dataTask: URLSessionDataTask?
 
-    var callback: (UIImage) -> Void = { _ in }
+    var callback: (UIImage?) -> Void = { _ in }
+    var completed: () -> Void = { _ in }
 
     private override init() {}
 
@@ -57,7 +58,13 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
         self.receivedData?.append(data)
     }
 
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        self.completed()
+    }
+
     func stop() {
+        self.callback = {_ in }
+        self.completed = {_ in }
         self.dataTask?.cancel()
         self.dataTask = nil
         self.receivedData = nil
@@ -66,13 +73,19 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
 
 
 extension OSCKit {
-    public func startLivePreview(callback: @escaping (UIImage) -> Void) {
+    public func startLivePreview(callback: @escaping (UIImage?) -> Void) {
         async {
             let session = try await(OSCKit.shared.session)
             try await(self.execute(command: .setOptions(options: [CaptureMode.image], sessionId: session.id)))
             DispatchQueue.main.async(execute: {
                 LivePreview.shared.stop()
                 LivePreview.shared.callback = callback
+                LivePreview.shared.completed = {
+                    callback(nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: { 
+                        self.startLivePreview(callback: callback)
+                    })
+                }
                 let json = Command._getLivePreview(sessionId: session.id).json
                 let request = self.assembleRequest(endPoint: .execute, params: json)
                 LivePreview.shared.play(request: request)
