@@ -1,3 +1,7 @@
+
+### 0.0.3
+
+* retry live preview when it fails
 * Add prepare API for image
 * Fix wasJustIssued Logic
-Add endwlan api
+* Add endwlan api
