@@ -35,6 +35,20 @@ public struct Session {
 }
 
 extension OSCKit {
+
+    public func waitForSession() -> Promise<Void> {
+        func recursion(retry: Int) -> Promise<Session> {
+            return session.recover(execute: { (error) -> Promise<Session> in
+                print(error.localizedDescription)
+                if retry < 0 {
+                    return Promise(error: error)
+                }
+                return after(interval: 2).then(execute: {recursion(retry: retry - 1)})
+            })
+        }
+        return recursion(retry: 5).then(execute: {_ in ()})
+    }
+
     public var session: Promise<Session> {
         if let currentSession = Session.currentSession {
             if currentSession.wasJustedIssued {

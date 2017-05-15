@@ -1,4 +1,5 @@
-"* **Breaking API** Add SSID notification"
+* **Breaking API** Add SSID notification
+* Add `waitForSession` which will retry 5 times before errors out on session
 
 ### 0.0.3
 

@@ -19,12 +19,20 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        OSCKit.shared.startLivePreview { (image) in
-            self.image.image = image
-        }
 
         ssidObservationCancellation = OSCKit.shared.ssid {[weak self] (ssid) in
-            self?.ssidLabel.text = ssid
+            guard let `self` = self else { return }
+
+            self.ssidLabel.text = ssid
+            print(ssid)
+            if ssid?.hasPrefix("THETA") == true {
+                OSCKit.shared.waitForSession().then(execute: { () -> Void in
+                    print("Connected")
+                    OSCKit.shared.startLivePreview { (image) in
+                        self.image.image = image
+                    }
+                })
+            }
         }
 
     }
