@@ -51,6 +51,7 @@ final class SSID: NSObject {
     func subscribe(onChange subscriber: @escaping (String?) -> Void) -> () -> Void {
         let uuid = UUID().uuidString
         subscribers[uuid] = subscriber
+        subscriber(previousSSID)
         return {
             self.subscribers[uuid] = nil
         }
