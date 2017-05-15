@@ -1,3 +1,7 @@
+### 0.1.4
+
+* Fix session persist
+
 ### 0.1.1
 
 * Calling SSID subscriber on start

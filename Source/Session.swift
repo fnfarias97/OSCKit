@@ -65,7 +65,9 @@ extension OSCKit {
     var startSession: Promise<Session> {
         return async {
             let response = try await(self.execute(command: .startSession))
-            return try Session(json: response)
+            let session = try Session(json: response)
+            Session.currentSession = session
+            return session
         }
     }
 
@@ -73,7 +75,9 @@ extension OSCKit {
         return async {
             do {
                 let response = try await(self.execute(command: .updateSession(sessionId: session.id)))
-                return try Session(json: response)
+                let session = try Session(json: response)
+                Session.currentSession = session
+                return session
             } catch {
                 return try await(self.startSession)
             }
