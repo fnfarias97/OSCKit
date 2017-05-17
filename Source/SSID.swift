@@ -58,7 +58,7 @@ final class SSID: NSObject {
         }
     }
 
-    private var current: String? {
+    var current: String? {
         if let interfaces = CNCopySupportedInterfaces() {
             for i in 0..<CFArrayGetCount(interfaces) {
                 let interfaceName: UnsafeRawPointer = CFArrayGetValueAtIndex(interfaces, i)
@@ -78,6 +78,10 @@ extension OSCKit {
 
     public func ssid(changed: @escaping (String?) -> Void) -> () -> Void {
         return SSID.shared.subscribe(onChange: changed)
+    }
+
+    public var currentSSID: String? {
+        return SSID.shared.current
     }
 
 }
