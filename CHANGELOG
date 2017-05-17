@@ -1,3 +1,6 @@
+### 0.1.5
+* Add back current SSID API
+
 ### 0.1.4
 
 * Fix session persist
