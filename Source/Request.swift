@@ -36,13 +36,6 @@ enum Endpoint {
 }
 
 extension OSCKit {
-
-    static let urlSession: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 5
-        return URLSession(configuration: config)
-    }()
-
     func assembleRequest(endPoint: Endpoint = .execute, params json: JSON? = nil) -> URLRequest {
         var request = URLRequest(url: URL(string: "http://192.168.1.1\(endPoint.path)")!)
         request.httpMethod = endPoint.method
@@ -56,7 +49,7 @@ extension OSCKit {
     func requestJSON(endPoint: Endpoint = .execute, params json: JSON? = nil) -> Promise<JSON> {
         var request = assembleRequest(endPoint: endPoint, params: json)
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        return OSCKit.urlSession.dataTask(with: request).then(execute: { data -> JSON in
+        return URLSession.shared.dataTask(with: request).then(execute: { data -> JSON in
             let anyObject = try JSONSerialization.jsonObject(with: data, options: [])
             return JSON(value: anyObject as? NSObject)
         })
@@ -65,7 +58,7 @@ extension OSCKit {
     func requestData(command: Command) -> Promise<Data> {
         return async {
             let request = self.assembleRequest(params: command.json)
-            return try await(OSCKit.urlSession.dataTask(with: request))
+            return try await(URLSession.shared.dataTask(with: request))
         }
     }
 
