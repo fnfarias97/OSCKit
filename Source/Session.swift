@@ -38,7 +38,8 @@ extension OSCKit {
 
     public func waitForSession() -> Promise<Void> {
         func recursion(retry: Int) -> Promise<Session> {
-            let timeout: Promise<Session> = after(interval: 5).then(execute: {_ in Promise(error: OSCKit.SDKError.fetchTimeout)})
+            let timeout: Promise<Session> = after(interval: 5)
+                .then(execute: {_ in Promise(error: OSCKit.SDKError.fetchTimeout)})
             return race(timeout, session).recover(execute: { (error) -> Promise<Session> in
                 if retry < 0 {
                     return Promise(error: error)

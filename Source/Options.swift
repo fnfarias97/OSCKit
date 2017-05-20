@@ -21,7 +21,7 @@ enum CaptureMode: String, Option {
     var value: JSON { return JSON(value: self.rawValue as NSObject) }
 }
 
-struct FileFormat: Option {
+public struct FileFormat: Option {
 
     let type: String
     let width: Int
@@ -31,4 +31,5 @@ struct FileFormat: Option {
     var value: JSON { return ["type": type, "width": width, "height": height] }
 
     static let smallImage = FileFormat(type: "jpeg", width: 2048, height: 1024)
+    static let largeImage = FileFormat(type: "jpeg", width: 5376, height: 2688)
 }
