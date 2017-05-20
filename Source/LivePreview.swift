@@ -26,8 +26,9 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
     private var receivedData: NSMutableData?
     private var dataTask: URLSessionDataTask?
 
-    var callback: (UIImage?) -> Void = { _ in }
-    var completed: () -> Void = { _ in }
+    var callback: ((UIImage?) -> Void)?
+    var completed: (() -> Void)?
+    var restartTimer: Timer?
 
     private override init() {}
 
@@ -46,7 +47,7 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
                 status = .playing
             }
             DispatchQueue.main.async {
-                self.callback(receivedImage)
+                self.callback?(receivedImage)
             }
         }
 
@@ -59,15 +60,17 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        self.completed()
+        self.completed?()
     }
 
     func stop() {
-        self.callback = {_ in }
-        self.completed = {_ in }
+        self.callback = nil
+        self.completed = nil
         self.dataTask?.cancel()
         self.dataTask = nil
         self.receivedData = nil
+        self.restartTimer?.invalidate()
+        self.restartTimer = nil
     }
 }
 
@@ -82,8 +85,8 @@ extension OSCKit {
                 LivePreview.shared.callback = callback
                 LivePreview.shared.completed = {
                     callback(nil)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: { 
-                        self.startLivePreview(callback: callback)
+                    LivePreview.shared.restartTimer = Timer.after(5, action: {[weak self] in
+                        self?.startLivePreview(callback: callback)
                     })
                 }
                 let json = Command._getLivePreview(sessionId: session.id).json
@@ -98,4 +101,24 @@ extension OSCKit {
             LivePreview.shared.stop()
         }
     }
+}
+
+extension Timer {
+
+    class DummyTarget: NSObject {
+        let callback: () -> Void
+        init(callback: @escaping () -> Void) {
+            self.callback = callback
+        }
+
+        func timerUpdated() {
+            self.callback()
+        }
+    }
+
+    static func after(_ time: TimeInterval, repeats: Bool = false, action: @escaping () -> Void) -> Timer {
+        let target = DummyTarget(callback: action)
+        return self.scheduledTimer(timeInterval: time, target: target, selector: #selector(target.timerUpdated), userInfo: nil, repeats: repeats)
+    }
+
 }

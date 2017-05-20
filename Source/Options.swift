@@ -30,6 +30,6 @@ public struct FileFormat: Option {
     var key: String { return "fileFormat" }
     var value: JSON { return ["type": type, "width": width, "height": height] }
 
-    static let smallImage = FileFormat(type: "jpeg", width: 2048, height: 1024)
-    static let largeImage = FileFormat(type: "jpeg", width: 5376, height: 2688)
+    public static let smallImage = FileFormat(type: "jpeg", width: 2048, height: 1024)
+    public static let largeImage = FileFormat(type: "jpeg", width: 5376, height: 2688)
 }
