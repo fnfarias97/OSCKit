@@ -1,3 +1,8 @@
+### 0.1.8
+
+* Fix a bug where the stop call won't stop live preview
+* Remove SSID registering
+
 ### 0.1.7
 
 * Add option to capture large image
