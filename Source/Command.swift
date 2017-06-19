@@ -25,7 +25,7 @@ enum Command {
     case getImage(fileUri: String, _type: DownloadType)
     case _getVideo(fileUri: String, _type: DownloadType)
     case _getLivePreview(sessionId: String)
-    case getMetadata
+    case getMetadata(fileUri: String)
     case getOptions
     case setOptions(options: [Option], sessionId: String)
     case _getMySetting
@@ -104,6 +104,10 @@ extension Command {
             ])
         case ._getLivePreview(sessionId: let id): return with(params: ["sessionId": id])
         case ._finishWlan(sessionId: let id): return with(params: ["sessionId": id])
+        case .getMetadata(let fileUri):
+            return with(params: [
+                "fileUri": fileUri,
+            ])
         default: return defaultJSON
         }
     }
