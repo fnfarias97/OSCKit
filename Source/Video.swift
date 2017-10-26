@@ -46,7 +46,11 @@ extension OSCKit {
                     $0.url != lastItem.url && $0.type ~= .video
                 }))
                 return mediaItem.url
-            case .version2_1: fatalError("Not implented")
+            case .version2_1:
+                let result = try await(self.execute(command: CommandV2.stopCapture))
+                let statusID = try result["id"].string !! SDKError.unableToParse(result)
+                let statusResponse = try await(self.waitForStatus(id: statusID))
+                return try statusResponse["results"]["fileUris"].array?.first?.string !! SDKError.unableToParse(statusResponse)
             }
         }
     }
@@ -62,7 +66,13 @@ extension OSCKit {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return fileURL
             }
-            let data = try await(self.requestData(command: CommandV1._getVideo(fileUri: url, _type: type)))
+            let data: Data
+            switch try await(self.apiVersion) {
+            case .version2:
+                data = try await(self.requestData(command: CommandV1._getVideo(fileUri: url, _type: type)))
+            case .version2_1:
+                data = try await(self.requestData(url: url))
+            }
             try data.write(to: fileURL)
             return fileURL
         }

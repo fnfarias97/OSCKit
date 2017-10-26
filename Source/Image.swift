@@ -38,7 +38,13 @@ extension OSCKit {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return fileURL
             }
-            let data = try await(self.requestData(command: CommandV1.getImage(fileUri: url, _type: type)))
+            let data: Data
+            switch try await(self.apiVersion) {
+            case .version2:
+                data = try await(self.requestData(command: CommandV1.getImage(fileUri: url, _type: type)))
+            case .version2_1:
+                data = try await(self.requestData(url: url))
+            }
             try data.write(to: fileURL)
             return fileURL
         }
@@ -46,17 +52,22 @@ extension OSCKit {
 
     public func takePicture(format: FileFormat = .smallImage) -> Promise<String> {
         return async {
+            let captureResponse: JSON
             switch try await(self.apiVersion) {
             case .version2(let session):
                 try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
                 try await(self.execute(command: CommandV1.setOptions(options: [format], sessionId: session.id)))
-                let captureResponse = try await(self.execute(command: CommandV1.takePicture(sessionId: session.id)))
-                let statusID = try captureResponse["id"].string !! SDKError.unableToParse(captureResponse)
-                let statusResponse = try await(self.waitForStatus(id: statusID))
-                return try statusResponse["results"]["fileUri"].string !! SDKError.unableToParse(statusResponse)
+                captureResponse = try await(self.execute(command: CommandV1.takePicture(sessionId: session.id)))
             case .version2_1:
-                fatalError("Not implemented")
+                try await(self.execute(command: CommandV2.setOptions(options: [CaptureMode.image])))
+                try await(self.execute(command: CommandV2.setOptions(options: [format])))
+                captureResponse = try await(self.execute(command: CommandV2.takePicture))
             }
+            let statusID = try captureResponse["id"].string !! SDKError.unableToParse(captureResponse)
+            let statusResponse = try await(self.waitForStatus(id: statusID))
+            // V2.0 has it as fileUri, v2.1 has it as fileUrl, and the doc for v2.1 has it as fileUri. FML
+            let fileUri = statusResponse["results"]["fileUri"].string ?? statusResponse["results"]["fileUrl"].string
+            return try fileUri !! SDKError.unableToParse(statusResponse)
         }
     }
 }

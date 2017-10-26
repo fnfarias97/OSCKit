@@ -62,6 +62,11 @@ extension OSCKit {
         }
     }
 
+    func requestData(url: String) -> Promise<Data> {
+        let request = URLRequest(url: URL(string: url)!)
+        return URLSession.shared.dataTask(with: request)
+    }
+
     func execute(command: Command) -> Promise<JSON> {
         return self.requestJSON(endPoint: .execute, params: command.json)
     }

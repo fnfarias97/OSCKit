@@ -23,18 +23,23 @@ class ViewController: UIViewController {
 //            print(try await(OSCKit.shared.usingVersion2_1()))
 //        }
         self.ssidLabel.text = self.sdk.currentSSID
-        async {
-            do {
-                try await(self.sdk.waitForInitialization())
-            } catch(let error) {
-                print(error)
-            }
-            self.sdk.startLivePreview { (image) in
-                DispatchQueue.main.async {
-                    self.image.image = image
-                }
-            }
-        }
+//        async {
+//            do {
+//                try await(self.sdk.waitForInitialization())
+//            } catch(let error) {
+//                print(error)
+//            }
+//            self.sdk.startLivePreview { (image) in
+//                DispatchQueue.main.async {
+//                    self.image.image = image
+//                }
+//            }
+//        }
+        self.sdk.takePicture().then(execute: {
+            self.sdk.getImage(url: $0)
+        }).then(on: .main) { (image: UIImage) -> Void in
+            self.image.image = image
+         }
 
     }
 
