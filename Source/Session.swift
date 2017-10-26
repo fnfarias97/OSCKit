@@ -16,8 +16,6 @@ public struct Session {
     let expires: Date
     let issued: Date
 
-    fileprivate static var currentSession: Session?
-
     init (json: JSON) throws {
         self.id = try json["results"]["sessionId"].string !! OSCKit.SDKError.unableToParse(json)
         let expire = try json["results"]["timeout"].int !! OSCKit.SDKError.unableToParse(json)
@@ -51,7 +49,7 @@ extension OSCKit {
     }
 
     public var session: Promise<Session> {
-        if let currentSession = Session.currentSession {
+        if let currentSession = self.currentSession {
             if currentSession.wasJustedIssued {
                 return Promise(value: currentSession)
             }
@@ -67,7 +65,7 @@ extension OSCKit {
         return async {
             let response = try await(self.execute(command: CommandV1.startSession))
             let session = try Session(json: response)
-            Session.currentSession = session
+            self.currentSession = session
             return session
         }
     }
@@ -77,7 +75,7 @@ extension OSCKit {
             do {
                 let response = try await(self.execute(command: CommandV1.updateSession(sessionId: session.id)))
                 let session = try Session(json: response)
-                Session.currentSession = session
+                self.currentSession = session
                 return session
             } catch {
                 return try await(self.startSession)

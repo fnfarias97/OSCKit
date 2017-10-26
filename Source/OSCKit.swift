@@ -8,7 +8,6 @@
 import SwiftyyJSON
 
 public class OSCKit {
-    public static let shared = OSCKit()
 
     enum SDKError: Error {
         case unableToParse(JSON)
@@ -19,7 +18,9 @@ public class OSCKit {
         case unableToCreateVideoCacheKey
     }
 
-    private init() { }
+    var currentSession: Session?
+
+    public init() { }
 
 }
 

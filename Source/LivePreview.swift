@@ -78,7 +78,7 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
 extension OSCKit {
     public func startLivePreview(callback: @escaping (UIImage?) -> Void) {
         async {
-            let session = try await(OSCKit.shared.session)
+            let session = try await(self.session)
             try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
             DispatchQueue.main.async(execute: {
                 LivePreview.shared.stop()
