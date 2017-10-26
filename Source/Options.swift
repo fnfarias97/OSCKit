@@ -14,6 +14,13 @@ protocol Option {
     var value: JSON { get }
 }
 
+enum APIVersion: Int, Option {
+    case v2_1 = 2
+    case v2_0 = 1
+    var key: String { return "clientVersion" }
+    var value: JSON { return JSON(value: self.rawValue as NSObject) }
+}
+
 enum CaptureMode: String, Option {
     case video = "_video"
     case image = "image"

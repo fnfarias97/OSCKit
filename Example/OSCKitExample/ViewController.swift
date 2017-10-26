@@ -8,6 +8,7 @@
 
 import UIKit
 import OSC
+import AwaitKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var ssidLabel: UILabel!
@@ -18,12 +19,15 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 
         self.ssidLabel.text = OSCKit.shared.currentSSID
-        OSCKit.shared.waitForSession().then(execute: { () -> Void in
-            print("Connected")
+        async {
+            try await(OSCKit.shared.waitForSession())
+            try await(OSCKit.shared.usingVersion2_1())
             OSCKit.shared.startLivePreview { (image) in
-                self.image.image = image
+                DispatchQueue.main.async {
+                    self.image.image = image
+                }
             }
-        })
+        }
 
     }
 
