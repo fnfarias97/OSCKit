@@ -65,7 +65,7 @@ extension OSCKit {
 
     var startSession: Promise<Session> {
         return async {
-            let response = try await(self.execute(command: .startSession))
+            let response = try await(self.execute(command: CommandV1.startSession))
             let session = try Session(json: response)
             Session.currentSession = session
             return session
@@ -75,7 +75,7 @@ extension OSCKit {
     func update(session: Session) -> Promise<Session> {
         return async {
             do {
-                let response = try await(self.execute(command: .updateSession(sessionId: session.id)))
+                let response = try await(self.execute(command: CommandV1.updateSession(sessionId: session.id)))
                 let session = try Session(json: response)
                 Session.currentSession = session
                 return session
@@ -88,7 +88,7 @@ extension OSCKit {
     public func end() -> Promise<Void> {
         return async {
             let session = try await(self.session)
-            try await(self.execute(command: ._finishWlan(sessionId: session.id)))
+            try await(self.execute(command: CommandV1._finishWlan(sessionId: session.id)))
         }
     }
 }

@@ -22,8 +22,8 @@ extension OSCKit {
     public func startCapture(mode: VideoCaptureMode = .interval) -> Promise<JSON> {
         return async {
             let session = try await(self.session)
-            try await(self.execute(command: .setOptions(options: [CaptureMode.video], sessionId: session.id)))
-            return try await(self.execute(command: ._startCapture(sessionId: session.id, mode: mode)))
+            try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.video], sessionId: session.id)))
+            return try await(self.execute(command: CommandV1._startCapture(sessionId: session.id, mode: mode)))
         }
 
     }
@@ -35,7 +35,7 @@ extension OSCKit {
             // This is due to the face THETA API v2.0 does not return a file URL when capture finishes
             // https://developers.theta360.com/en/docs/v2.0/api_reference/commands/camera._stop_capture.html
             let lastItem = try await(self.getLatestMediaItem(withPredicate: const(value: true)))
-            try await(self.execute(command: ._stopCapture(sessionId: session.id)))
+            try await(self.execute(command: CommandV1._stopCapture(sessionId: session.id)))
             // After stop capturing video, wait until it returns a new item with type being .video
             let mediaItem = try await(self.getLatestMediaItem(withPredicate: {
                 $0.url != lastItem.url && $0.type ~= .video
@@ -55,7 +55,7 @@ extension OSCKit {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return fileURL
             }
-            let data = try await(self.requestData(command: ._getVideo(fileUri: url, _type: type)))
+            let data = try await(self.requestData(command: CommandV1._getVideo(fileUri: url, _type: type)))
             try data.write(to: fileURL)
             return fileURL
         }

@@ -79,7 +79,7 @@ extension OSCKit {
     public func startLivePreview(callback: @escaping (UIImage?) -> Void) {
         async {
             let session = try await(OSCKit.shared.session)
-            try await(self.execute(command: .setOptions(options: [CaptureMode.image], sessionId: session.id)))
+            try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
             DispatchQueue.main.async(execute: {
                 LivePreview.shared.stop()
                 LivePreview.shared.callback = callback
@@ -89,7 +89,7 @@ extension OSCKit {
                         self?.startLivePreview(callback: callback)
                     })
                 }
-                let json = Command._getLivePreview(sessionId: session.id).json
+                let json = CommandV1._getLivePreview(sessionId: session.id).json
                 let request = self.assembleRequest(endPoint: .execute, params: json)
                 LivePreview.shared.play(request: request)
             })

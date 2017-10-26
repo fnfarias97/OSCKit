@@ -11,7 +11,25 @@ import SwiftyyJSON
 
 // swiftlint:disable identifier_name
 // We want to keep it as close to API as possible
-enum Command {
+protocol Command {
+    var name: String { get }
+    var json: JSON { get }
+}
+
+extension Command {
+    var defaultJSON: JSON {
+        return ["name": self.name]
+    }
+
+    func with(params: [String: Any]) -> JSON {
+        return [
+            "name": self.name,
+            "parameters": params
+        ]
+    }
+}
+
+enum CommandV1: Command {
     case startSession
     case updateSession(sessionId: String)
     case closeSession(sessionId: String)
@@ -34,7 +52,7 @@ enum Command {
 }
 // swiftlint:enable identifier_name
 
-extension Command {
+extension CommandV1 {
     var name: String {
         switch self {
         case .startSession: return "camera.startSession"
@@ -57,17 +75,6 @@ extension Command {
         case ._setMySetting: return "camera._setMySetting"
         case ._stopSelfTimer: return "camera._stopSelfTimer"
         }
-    }
-
-    var defaultJSON: JSON {
-        return ["name": self.name]
-    }
-
-    func with(params: [String: Any]) -> JSON {
-        return [
-            "name": self.name,
-            "parameters": params
-        ]
     }
 
     var json: JSON {

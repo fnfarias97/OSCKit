@@ -38,7 +38,7 @@ extension OSCKit {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return fileURL
             }
-            let data = try await(self.requestData(command: .getImage(fileUri: url, _type: type)))
+            let data = try await(self.requestData(command: CommandV1.getImage(fileUri: url, _type: type)))
             try data.write(to: fileURL)
             return fileURL
         }
@@ -47,9 +47,9 @@ extension OSCKit {
     public func takePicture(format: FileFormat = .smallImage) -> Promise<String> {
         return async {
             let session = try await(self.session)
-            try await(self.execute(command: .setOptions(options: [CaptureMode.image], sessionId: session.id)))
-            try await(self.execute(command: .setOptions(options: [format], sessionId: session.id)))
-            let captureResponse = try await(self.execute(command: .takePicture(sessionId: session.id)))
+            try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
+            try await(self.execute(command: CommandV1.setOptions(options: [format], sessionId: session.id)))
+            let captureResponse = try await(self.execute(command: CommandV1.takePicture(sessionId: session.id)))
             let statusID = try captureResponse["id"].string !! SDKError.unableToParse(captureResponse)
             let statusResponse = try await(self.waitForStatus(id: statusID))
             return try statusResponse["results"]["fileUri"].string !! SDKError.unableToParse(statusResponse)
