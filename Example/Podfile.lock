@@ -1,7 +1,7 @@
 PODS:
   - AwaitKit (3.0.0):
     - PromiseKit (~> 4.1)
-  - OSC (0.1.9):
+  - OSC (0.2.1):
     - AwaitKit
     - PromiseKit
     - SwiftyyJSON
@@ -27,7 +27,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AwaitKit: c469875701a000d6932dc2ec818719967e43be56
-  OSC: 4625966ed52a1d37303da66307c1d91dcf921a8e
+  OSC: 4b2e50261440d5a14c74be21248e2c8721c13517
   PromiseKit: 08dfb783c161ddcd95b7912421f14c5113fd8318
   SwiftyyJSON: ef3d37d200fec7a019c61f8da2a50e873c78dd05
 

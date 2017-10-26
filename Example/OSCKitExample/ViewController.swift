@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import OSC
+import OSCKit
 import AwaitKit
 
 class ViewController: UIViewController {
@@ -19,9 +19,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-//        async {
-//            print(try await(OSCKit.shared.usingVersion2_1()))
-//        }
         self.ssidLabel.text = self.sdk.currentSSID
 //        async {
 //            do {

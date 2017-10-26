@@ -77,7 +77,7 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
 
 extension OSCKit {
     public func startLivePreview(callback: @escaping (UIImage?) -> Void) {
-        async { () -> JSON in
+        _ = async { () -> JSON in
             switch try await(self.apiVersion) {
             case .version2(let session):
                 try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
