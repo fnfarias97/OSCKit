@@ -34,49 +34,34 @@ public struct Session {
 
 extension OSCKit {
 
-    public func waitForSession() -> Promise<Void> {
-        func recursion(retry: Int) -> Promise<Session> {
-            let timeout: Promise<Session> = after(interval: 5)
-                .then(execute: {_ in Promise(error: OSCKit.SDKError.fetchTimeout)})
-            return race(timeout, session).recover(execute: { (error) -> Promise<Session> in
-                if retry < 0 {
-                    return Promise(error: error)
-                }
-                return after(interval: 2).then(execute: {recursion(retry: retry - 1)})
-            })
+    func updateIfNeeded(session: Session) -> Promise<Session> {
+        let result: Promise<Session>
+        if session.wasJustedIssued {
+            result = Promise(value: session)
+        } else if session.isExpired {
+            result = startSession
+        } else {
+            result = update(session: session)
         }
-        return recursion(retry: 5).then(execute: {_ in ()})
-    }
-
-    public var session: Promise<Session> {
-        if let currentSession = self.currentSession {
-            if currentSession.wasJustedIssued {
-                return Promise(value: currentSession)
-            }
-            if currentSession.isExpired {
-                return startSession
-            }
-            return update(session: currentSession)
-        }
-        return startSession
+        return result.then(execute: { session -> Session in
+            self.currentApiVersion = .version2(session)
+            return session
+        })
     }
 
     var startSession: Promise<Session> {
         return async {
             let response = try await(self.execute(command: CommandV1.startSession))
             let session = try Session(json: response)
-            self.currentSession = session
             return session
         }
     }
 
-    func update(session: Session) -> Promise<Session> {
+    private func update(session: Session) -> Promise<Session> {
         return async {
             do {
                 let response = try await(self.execute(command: CommandV1.updateSession(sessionId: session.id)))
-                let session = try Session(json: response)
-                self.currentSession = session
-                return session
+                return try Session(json: response)
             } catch {
                 return try await(self.startSession)
             }
@@ -85,8 +70,12 @@ extension OSCKit {
 
     public func end() -> Promise<Void> {
         return async {
-            let session = try await(self.session)
-            try await(self.execute(command: CommandV1._finishWlan(sessionId: session.id)))
+            switch try await(self.apiVersion) {
+            case .version2(let session):
+                try await(self.execute(command: CommandV1._finishWlan(sessionId: session.id)))
+            case .version2_1:
+                try await(self.execute(command: CommandV2._finishWlan))
+            }
         }
     }
 }

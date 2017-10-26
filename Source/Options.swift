@@ -14,7 +14,7 @@ protocol Option {
     var value: JSON { get }
 }
 
-enum APIVersion: Int, Option {
+enum ClientVersion: Int, Option {
     case v2_1 = 2
     case v2_0 = 1
     var key: String { return "clientVersion" }

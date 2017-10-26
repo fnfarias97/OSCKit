@@ -18,7 +18,12 @@ public class OSCKit {
         case unableToCreateVideoCacheKey
     }
 
-    var currentSession: Session?
+    enum APIVersion {
+        case version2_1
+        case version2(Session)
+    }
+
+    var currentApiVersion: APIVersion?
 
     public init() { }
 

@@ -14,15 +14,22 @@ class ViewController: UIViewController {
     @IBOutlet weak var ssidLabel: UILabel!
     @IBOutlet weak var image: UIImageView!
 
+    let sdk = OSCKit()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        self.ssidLabel.text = OSCKit.shared.currentSSID
+//        async {
+//            print(try await(OSCKit.shared.usingVersion2_1()))
+//        }
+        self.ssidLabel.text = self.sdk.currentSSID
         async {
-            try await(OSCKit.shared.waitForSession())
-            try await(OSCKit.shared.usingVersion2_1())
-            OSCKit.shared.startLivePreview { (image) in
+            do {
+                try await(self.sdk.waitForInitialization())
+            } catch(let error) {
+                print(error)
+            }
+            self.sdk.startLivePreview { (image) in
                 DispatchQueue.main.async {
                     self.image.image = image
                 }

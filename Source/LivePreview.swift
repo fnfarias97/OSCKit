@@ -77,22 +77,26 @@ final class LivePreview: NSObject, URLSessionDataDelegate {
 
 extension OSCKit {
     public func startLivePreview(callback: @escaping (UIImage?) -> Void) {
-        async {
-            let session = try await(self.session)
-            try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
-            DispatchQueue.main.async(execute: {
-                LivePreview.shared.stop()
-                LivePreview.shared.callback = callback
-                LivePreview.shared.completed = {
-                    callback(nil)
-                    LivePreview.shared.restartTimer = Timer.after(5, action: {[weak self] in
-                        self?.startLivePreview(callback: callback)
-                    })
-                }
-                let json = CommandV1._getLivePreview(sessionId: session.id).json
-                let request = self.assembleRequest(endPoint: .execute, params: json)
-                LivePreview.shared.play(request: request)
-            })
+        async { () -> JSON in
+            switch try await(self.apiVersion) {
+            case .version2(let session):
+                try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
+                return CommandV1._getLivePreview(sessionId: session.id).json
+            case .version2_1:
+                try await(self.execute(command: CommandV2.setOptions(options: [CaptureMode.image])))
+                return CommandV2.getLivePreview.json
+            }
+        }.then(on: DispatchQueue.main) { json -> Void in
+            LivePreview.shared.stop()
+            LivePreview.shared.callback = callback
+            LivePreview.shared.completed = {
+                callback(nil)
+                LivePreview.shared.restartTimer = Timer.after(5, action: {[weak self] in
+                    self?.startLivePreview(callback: callback)
+                })
+            }
+            let request = self.assembleRequest(endPoint: .execute, params: json)
+            LivePreview.shared.play(request: request)
         }
     }
 
@@ -119,6 +123,6 @@ extension Timer {
     static func after(_ time: TimeInterval, repeats: Bool = false, action: @escaping () -> Void) -> Timer {
         let target = DummyTarget(callback: action)
         return self.scheduledTimer(timeInterval: time, target: target, selector: #selector(target.timerUpdated), userInfo: nil, repeats: repeats)
-    }
+   }
 
 }
