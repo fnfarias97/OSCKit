@@ -14,7 +14,7 @@ extension OSCKit {
     public func usingVersion2_1() -> Promise<Void> {
         return async {
             let session = try await(self.session)
-            try await(self.execute(command: .setOptions(options: [CaptureMode.image], sessionId: session.id)))
+            try await(self.execute(command: .setOptions(options: [APIVersion.v2_1], sessionId: session.id)))
         }
     }
 
