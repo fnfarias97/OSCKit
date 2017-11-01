@@ -23,6 +23,7 @@ public class OSCKit {
         case version2(Session)
     }
 
+    var currentDevice: DeviceInfo?
     var currentApiVersion: APIVersion?
 
     public init() { }

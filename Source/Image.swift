@@ -27,7 +27,7 @@ extension OSCKit {
 
     public func getImageLocalURL(url: String, type: DownloadType = .full) -> Promise<URL> {
         return async {
-            let device = try await(self.deviceInfo)
+            let device = try await(self.cachedDeviceInfo)
             // Adding serial key in the begining
             // To prevent cache collision between different devices
             let cacheKey = try (device.serial + url).addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) !! SDKError.unableToCreateVideoCacheKey

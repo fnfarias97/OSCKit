@@ -25,14 +25,23 @@ extension OSCKit {
             let info = try await(self.info)
             let state = try await(self.state)
 
-            return DeviceInfo(
+            let dI = DeviceInfo(
                 model: try info["model"].string !! SDKError.unableToParse(info),
                 serial: try info["serialNumber"].string !! SDKError.unableToParse(info),
                 battery: try state["state"]["batteryLevel"].double !! SDKError.unableToParse(state),
                 currentAPI: state["state"]["_apiVersion"].int ?? 1,
                 supportedAPI: info["apiLevel"].array?.flatMap({$0.int}) ?? [1]
             )
+            self.currentDevice = dI
+            return dI
         }
+    }
+
+    public var cachedDeviceInfo: Promise<DeviceInfo> {
+        if let cached = self.currentDevice {
+            return Promise(value: cached)
+        }
+        return self.deviceInfo
     }
 
     public var info: Promise<JSON> { return self.requestJSON(endPoint: .info) }

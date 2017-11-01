@@ -57,7 +57,7 @@ extension OSCKit {
 
     public func getVideo(url: String, type: DownloadType = .full) -> Promise<URL> {
         return async {
-            let device = try await(self.deviceInfo)
+            let device = try await(self.cachedDeviceInfo)
             let cacheKey = try (device.serial + url).addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) !! SDKError.unableToCreateVideoCacheKey
             let cacheFolder = try NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first.map({
                 URL(fileURLWithPath: $0)
