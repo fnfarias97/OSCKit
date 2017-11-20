@@ -35,6 +35,31 @@ enum Endpoint {
     }
 }
 
+private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
+
+    let (promise, fulfill, reject) = Promise<URL>.pending()
+
+    let progress: ((Double) -> Void)?
+
+    init(progress: ((Double) -> Void)?) {
+        self.progress = progress
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        progress?(Double(bytesWritten) / Double(totalBytesExpectedToWrite))
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        progress?(1)
+        fulfill(location)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error = error { reject(error) }
+    }
+
+}
+
 extension OSCKit {
     func assembleRequest(endPoint: Endpoint = .execute, params json: JSON? = nil) -> URLRequest {
         var request = URLRequest(url: URL(string: "http://192.168.1.1\(endPoint.path)")!)
@@ -60,6 +85,20 @@ extension OSCKit {
             let request = self.assembleRequest(params: command.json)
             return try await(URLSession.shared.dataTask(with: request))
         }
+    }
+
+    func download(command: Command, to: URL, progress: ((Double) -> Void)? = nil) -> Promise<URL> {
+        let request = self.assembleRequest(params: command.json)
+        return download(request: request, to: to, progress: progress)
+    }
+
+    func download(request: URLRequest, to: URL, progress: ((Double) -> Void)? = nil) -> Promise<URL> {
+        let dummyDelegate = DummyURLSessionDelegate(progress: progress)
+        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: dummyDelegate, delegateQueue: nil)
+
+        let task = session.downloadTask(with: request)
+        task.resume()
+        return dummyDelegate.promise
     }
 
     func requestData(url: String) -> Promise<Data> {

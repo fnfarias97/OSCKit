@@ -1,20 +1,20 @@
 PODS:
-  - AwaitKit (3.0.0):
-    - PromiseKit (~> 4.1)
-  - OSC (0.2.1):
+  - AwaitKit (3.0.1):
+    - PromiseKit (~> 4.2)
+  - OSC (0.2.2):
     - AwaitKit
     - PromiseKit
     - SwiftyyJSON
-  - PromiseKit (4.2.0):
-    - PromiseKit/Foundation (= 4.2.0)
-    - PromiseKit/QuartzCore (= 4.2.0)
-    - PromiseKit/UIKit (= 4.2.0)
-  - PromiseKit/CorePromise (4.2.0)
-  - PromiseKit/Foundation (4.2.0):
+  - PromiseKit (4.5.0):
+    - PromiseKit/Foundation (= 4.5.0)
+    - PromiseKit/QuartzCore (= 4.5.0)
+    - PromiseKit/UIKit (= 4.5.0)
+  - PromiseKit/CorePromise (4.5.0)
+  - PromiseKit/Foundation (4.5.0):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (4.2.0):
+  - PromiseKit/QuartzCore (4.5.0):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (4.2.0):
+  - PromiseKit/UIKit (4.5.0):
     - PromiseKit/CorePromise
   - SwiftyyJSON (1.0.3)
 
@@ -26,9 +26,9 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  AwaitKit: c469875701a000d6932dc2ec818719967e43be56
-  OSC: 4b2e50261440d5a14c74be21248e2c8721c13517
-  PromiseKit: 08dfb783c161ddcd95b7912421f14c5113fd8318
+  AwaitKit: daf1af84544413a8dfadb4fc25d8b0f9706e5c83
+  OSC: a89da2a0dc7864b44f47ce5dc080d4670907fa16
+  PromiseKit: 9c1d9f6d7b65e3951a90bea7f407c56972be5d8e
   SwiftyyJSON: ef3d37d200fec7a019c61f8da2a50e873c78dd05
 
 PODFILE CHECKSUM: c901d07026a93aee57e22d70e10a408b2e8482bc

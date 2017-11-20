@@ -18,14 +18,14 @@ public enum DownloadType: String {
 
 extension OSCKit {
 
-    public func getImage(url: String, type: DownloadType = .full) -> Promise<UIImage> {
+    public func getImage(url: String, type: DownloadType = .full, progress: ((Double) -> Void)? = nil) -> Promise<UIImage> {
         return async {
-            let url = try await(self.getImageLocalURL(url: url, type: type))
+            let url = try await(self.getImageLocalURL(url: url, type: type, progress: progress))
             return try UIImage(contentsOfFile: url.path) !! SDKError.unableToFindImageAt(url)
         }
     }
 
-    public func getImageLocalURL(url: String, type: DownloadType = .full) -> Promise<URL> {
+    public func getImageLocalURL(url: String, type: DownloadType = .full, progress: ((Double) -> Void)? = nil) -> Promise<URL> {
         return async {
             let device = try await(self.cachedDeviceInfo)
             // Adding serial key in the begining
@@ -38,15 +38,13 @@ extension OSCKit {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return fileURL
             }
-            let data: Data
             switch try await(self.apiVersion) {
             case .version2:
-                data = try await(self.requestData(command: CommandV1.getImage(fileUri: url, _type: type)))
+                return try await(self.download(command: CommandV1.getImage(fileUri: url, _type: type), to: fileURL, progress: progress))
             case .version2_1:
-                data = try await(self.requestData(url: url))
+                let request = URLRequest.init(url: URL(string: url)!)
+                return try await(self.download(request: request, to: fileURL, progress: progress))
             }
-            try data.write(to: fileURL)
-            return fileURL
         }
     }
 

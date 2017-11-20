@@ -19,24 +19,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        self.ssidLabel.text = self.sdk.currentSSID
-//        async {
-//            do {
-//                try await(self.sdk.waitForInitialization())
-//            } catch(let error) {
-//                print(error)
-//            }
-//            self.sdk.startLivePreview { (image) in
-//                DispatchQueue.main.async {
-//                    self.image.image = image
-//                }
-//            }
-//        }
-        self.sdk.takePicture().then(execute: {
-            self.sdk.getImage(url: $0)
-        }).then(on: .main) { (image: UIImage) -> Void in
-            self.image.image = image
-         }
+        async { () -> Void in
+            try await(self.sdk.waitForInitialization())
+            let initialized = Date()
+            let url = try await(self.sdk.takePicture(format: .largeImage))
+            try await(self.sdk.getImage(url: url, progress: {
+                print($0)
+            }))
+            print(Date().timeIntervalSince(initialized))
+        }
 
     }
 
