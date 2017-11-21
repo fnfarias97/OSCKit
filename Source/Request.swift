@@ -45,8 +45,12 @@ private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionD
         self.progress = progress
     }
 
+    var bytesPreviouslyWritten: Int64 = 0
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        progress?(Double(bytesWritten) / Double(totalBytesExpectedToWrite))
+        let totalBytesWritten = bytesWritten + bytesPreviouslyWritten
+        progress?(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite))
+        bytesPreviouslyWritten = totalBytesWritten
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
@@ -110,3 +114,4 @@ extension OSCKit {
         return self.requestJSON(endPoint: .execute, params: command.json)
     }
 }
+
