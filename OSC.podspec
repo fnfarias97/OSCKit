@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "OSC"
-  s.version      = "0.2.3"
+  s.version      = "1.0.0"
   s.summary      = "Richo OSCKit"
   s.description  = "Richo OSCKit with Promise"
   s.homepage     = "https://theta360.com/"

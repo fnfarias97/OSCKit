@@ -107,18 +107,18 @@ extension OSCKit {
     }
 }
 
-extension Timer {
-
-    class DummyTarget: NSObject {
-        let callback: () -> Void
-        init(callback: @escaping () -> Void) {
-            self.callback = callback
-        }
-
-        func timerUpdated() {
-            self.callback()
-        }
+private class DummyTarget: NSObject {
+    let callback: () -> Void
+    init(callback: @escaping () -> Void) {
+        self.callback = callback
     }
+
+    @objc func timerUpdated() {
+        self.callback()
+    }
+}
+
+extension Timer {
 
     static func after(_ time: TimeInterval, repeats: Bool = false, action: @escaping () -> Void) -> Timer {
         let target = DummyTarget(callback: action)
