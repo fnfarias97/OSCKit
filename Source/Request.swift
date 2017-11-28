@@ -41,8 +41,11 @@ private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionD
 
     let progress: ((Double) -> Void)?
 
-    init(progress: ((Double) -> Void)?) {
+    let targetLocation: URL
+
+    init(progress: ((Double) -> Void)?, targetLocation: URL) {
         self.progress = progress
+        self.targetLocation = targetLocation
     }
 
     var bytesPreviouslyWritten: Int64 = 0
@@ -55,7 +58,12 @@ private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionD
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         progress?(1)
-        fulfill(location)
+        do {
+            try FileManager.default.moveItem(at: location, to: self.targetLocation)
+            fulfill(self.targetLocation)
+        } catch (let error) {
+            reject(error)
+        }
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
@@ -97,7 +105,7 @@ extension OSCKit {
     }
 
     func download(request: URLRequest, to: URL, progress: ((Double) -> Void)? = nil) -> Promise<URL> {
-        let dummyDelegate = DummyURLSessionDelegate(progress: progress)
+        let dummyDelegate = DummyURLSessionDelegate(progress: progress, targetLocation: to)
         let session = URLSession(configuration: URLSessionConfiguration.default, delegate: dummyDelegate, delegateQueue: nil)
 
         let task = session.downloadTask(with: request)
