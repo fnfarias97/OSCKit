@@ -19,7 +19,7 @@ extension OSCKit {
             ]
             let response = try await(self.requestJSON(endPoint: .status, params: json))
             if response["state"].string == "inProgress" {
-                try await(after(interval: 2))
+                try await(after(seconds: 2).asVoid())
                 return try await(self.waitForStatus(id: id))
             }
             return response

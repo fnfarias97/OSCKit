@@ -30,7 +30,7 @@ extension OSCKit {
                 serial: try info["serialNumber"].string !! SDKError.unableToParse(info),
                 battery: try state["state"]["batteryLevel"].double !! SDKError.unableToParse(state),
                 currentAPI: state["state"]["_apiVersion"].int ?? 1,
-                supportedAPI: info["apiLevel"].array?.flatMap({$0.int}) ?? [1]
+                supportedAPI: info["apiLevel"].array?.compactMap({$0.int}) ?? [1]
             )
             self.currentDevice = dI
             return dI
@@ -39,7 +39,7 @@ extension OSCKit {
 
     public var cachedDeviceInfo: Promise<DeviceInfo> {
         if let cached = self.currentDevice {
-            return Promise(value: cached)
+            return Promise.value(cached)
         }
         return self.deviceInfo
     }

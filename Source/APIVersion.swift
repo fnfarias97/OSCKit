@@ -13,16 +13,16 @@ extension OSCKit {
 
     public func waitForInitialization() -> Promise<Void> {
         func recursion(retry: Int) -> Promise<APIVersion> {
-            let timeout: Promise<APIVersion> = after(interval: 15)
-                    .then(execute: {_ in Promise(error: OSCKit.SDKError.fetchTimeout)})
-            return race(timeout, self.apiVersion).recover(execute: { (error) -> Promise<APIVersion> in
+            let timeout: Promise<APIVersion> = after(seconds: 15)
+                    .then({ Promise(error: OSCKit.SDKError.fetchTimeout)})
+            return race(timeout, self.apiVersion).recover({ (error) -> Promise<APIVersion> in
                 if retry < 0 {
                     return Promise(error: error)
                 }
-                return after(interval: 2).then(execute: {recursion(retry: retry - 1)})
+                return after(seconds: 2).then({recursion(retry: retry - 1)})
             })
         }
-        return recursion(retry: 5).then(execute: { api in
+        return recursion(retry: 5).done({ api in
             self.currentApiVersion = api
         })
     }
@@ -30,8 +30,8 @@ extension OSCKit {
     var apiVersion: Promise<APIVersion> {
         if let current = self.currentApiVersion {
             switch current {
-                case .version2(let session): return self.updateIfNeeded(session: session).then { APIVersion.version2($0) }
-                case .version2_1: return Promise(value: current)
+                case .version2(let session): return self.updateIfNeeded(session: session).map({ APIVersion.version2($0) })
+                case .version2_1: return Promise.value(current)
             }
         }
         return async {

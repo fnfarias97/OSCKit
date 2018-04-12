@@ -86,7 +86,7 @@ extension OSCKit {
                 try await(self.execute(command: CommandV2.setOptions(options: [CaptureMode.image])))
                 return CommandV2.getLivePreview.json
             }
-        }.then(on: DispatchQueue.main) { json -> Void in
+        }.done(on: DispatchQueue.main) { json -> Void in
             LivePreview.shared.stop()
             LivePreview.shared.callback = callback
             LivePreview.shared.completed = {

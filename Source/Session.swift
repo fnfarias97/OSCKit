@@ -37,13 +37,13 @@ extension OSCKit {
     func updateIfNeeded(session: Session) -> Promise<Session> {
         let result: Promise<Session>
         if session.wasJustedIssued {
-            result = Promise(value: session)
+            result = Promise.value(session)
         } else if session.isExpired {
             result = startSession
         } else {
             result = update(session: session)
         }
-        return result.then(execute: { session -> Session in
+        return result.map({ session -> Session in
             self.currentApiVersion = .version2(session)
             return session
         })

@@ -37,7 +37,7 @@ enum Endpoint {
 
 private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionDownloadDelegate {
 
-    let (promise, fulfill, reject) = Promise<URL>.pending()
+    let (promise, seal) = Promise<URL>.pending()
 
     let progress: ((Double) -> Void)?
 
@@ -60,14 +60,14 @@ private class DummyURLSessionDelegate: NSObject, URLSessionDelegate, URLSessionD
         progress?(1)
         do {
             try FileManager.default.moveItem(at: location, to: self.targetLocation)
-            fulfill(self.targetLocation)
+            seal.fulfill(self.targetLocation)
         } catch (let error) {
-            reject(error)
+            seal.reject(error)
         }
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error { reject(error) }
+        if let error = error { seal.reject(error) }
     }
 
 }
@@ -86,8 +86,8 @@ extension OSCKit {
     func requestJSON(endPoint: Endpoint = .execute, params json: JSON? = nil) -> Promise<JSON> {
         var request = assembleRequest(endPoint: endPoint, params: json)
         request.addValue("application/json", forHTTPHeaderField: "Accept")
-        return URLSession.shared.dataTask(with: request).then(execute: { data -> JSON in
-            let anyObject = try JSONSerialization.jsonObject(with: data, options: [])
+        return URLSession.shared.dataTask(.promise, with: request).map({ response -> JSON in
+            let anyObject = try JSONSerialization.jsonObject(with: response.data, options: [])
             return JSON(value: anyObject as? NSObject)
         })
     }
@@ -95,7 +95,7 @@ extension OSCKit {
     func requestData(command: Command) -> Promise<Data> {
         return async {
             let request = self.assembleRequest(params: command.json)
-            return try await(URLSession.shared.dataTask(with: request))
+            return try await(URLSession.shared.dataTask(.promise, with: request).map({$0.data}))
         }
     }
 
@@ -115,7 +115,7 @@ extension OSCKit {
 
     func requestData(url: String) -> Promise<Data> {
         let request = URLRequest(url: URL(string: url)!)
-        return URLSession.shared.dataTask(with: request)
+        return URLSession.shared.dataTask(.promise, with: request).map({$0.data})
     }
 
     func execute(command: Command) -> Promise<JSON> {

@@ -64,7 +64,7 @@ extension OSCKit {
                     return item
                 }
             }
-            try await(after(interval: 2))
+            try await(after(seconds: 2).asVoid())
             return try await(self.getLatestMediaItem(timeout: timeout - 2, withPredicate: predicate))
         }
     }
