@@ -68,11 +68,7 @@ extension OSCKit {
                 return try await(recursion(currentURL: newFile))
             }
         }
-        do {
-            return (recursion(currentURL: try await(self.latestFile)), {stop = true})
-        } catch {
-            return (Promise(error: error), {})
-        }
+        return (self.latestFile.then({recursion(currentURL: $0)}), {stop = true})
     }
 
 }

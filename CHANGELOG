@@ -1,3 +1,10 @@
+### 3.0.0
+
+* Add ability to watch for hardware button press
+* Split image capture into prepare and capture
+
+P.S. it's break the API cause you need have to call prepare before capture
+
 ### 0.1.9
 
 * Add fileURL field in `getMetadata`
