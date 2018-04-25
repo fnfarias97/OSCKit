@@ -91,9 +91,11 @@ extension OSCKit {
             LivePreview.shared.callback = callback
             LivePreview.shared.completed = {
                 callback(nil)
-                LivePreview.shared.restartTimer = Timer.after(5, action: {[weak self] in
-                    self?.startLivePreview(callback: callback)
-                })
+                DispatchQueue.main.async {
+                    LivePreview.shared.restartTimer = Timer.after(5, action: {[weak self] in
+                        self?.startLivePreview(callback: callback)
+                    })
+                }
             }
             let request = self.assembleRequest(endPoint: .execute, params: json)
             LivePreview.shared.play(request: request)
