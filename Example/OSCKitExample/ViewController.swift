@@ -27,7 +27,9 @@ class ViewController: UIViewController {
         async {
             try await(self.sdk.waitForInitialization())
             self.sdk.startLivePreview(callback: { (image) in
-                self.image.image = image
+                DispatchQueue.main.async {
+                    self.image.image = image
+                }
             })
         }
     }
@@ -53,7 +55,9 @@ class ViewController: UIViewController {
             let (watch, cancelation) = self.sdk.watchTillLastFileChages()
             self.cancelWatch = cancelation
             let result = try await(watch)
-            self.ssidLabel.text = result
+            DispatchQueue.main.async {
+                self.ssidLabel.text = result
+            }
         }
     }
 
