@@ -21,6 +21,15 @@ public class OSCKit {
     enum APIVersion {
         case version2_1
         case version2(Session)
+
+        var isVersion2_1: Bool {
+            switch self {
+            case .version2_1:
+                return true
+            case .version2:
+                return false
+            }
+        }
     }
 
     var currentDevice: DeviceInfo?

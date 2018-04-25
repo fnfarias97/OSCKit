@@ -19,7 +19,22 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
 
-        async { () -> Void in
+        waitForHardwareButtonCapture()
+
+
+    }
+
+    func testPreview() {
+        async {
+            try await(self.sdk.waitForInitialization())
+            self.sdk.startLivePreview(callback: { (image) in
+                self.image.image = image
+            })
+        }
+    }
+
+    func downloadImageWithProgressInfo() {
+        async {
             try await(self.sdk.waitForInitialization())
             let initialized = Date()
             let url = try await(self.sdk.takePicture(format: .largeImage))
@@ -28,7 +43,23 @@ class ViewController: UIViewController {
             }))
             print(Date().timeIntervalSince(initialized))
         }
+    }
 
+    var cancelWatch: (() -> Void)?
+
+    func waitForHardwareButtonCapture() {
+        async {
+            try await(self.sdk.waitForInitialization())
+            try await(self.sdk.prepareTakePicture(format: .smallImage))
+            let (watch, cancelation) = self.sdk.watchTillLastFileChages()
+            self.cancelWatch = cancelation
+            let result = try await(watch)
+            self.ssidLabel.text = result
+        }
+    }
+
+    @IBAction func topButtonTapped(_ sender: Any) {
+        cancelWatch?()
     }
 
     override func didReceiveMemoryWarning() {

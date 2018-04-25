@@ -48,4 +48,31 @@ extension OSCKit {
 
     public var state: Promise<JSON> { return self.requestJSON(endPoint: .state) }
 
+    public var latestFile: Promise<String?> {
+        return self.state.map({
+            let state = $0["state"]
+            return state["_latestFileUri"].string ?? state["_latestFileUrl"].string
+        })
+    }
+
+    public func watchTillLastFileChages() -> (Promise<String>, () -> Void) {
+        var stop = false
+        func recursion(currentURL: String?) -> Promise<String> {
+            return async {
+                if stop { throw SDKError.fetchTimeout }
+                try await(after(seconds: 2).asVoid())
+                let newFile = try await(self.latestFile)
+                if let newFile = newFile, newFile != currentURL {
+                    return newFile
+                }
+                return try await(recursion(currentURL: newFile))
+            }
+        }
+        do {
+            return (recursion(currentURL: try await(self.latestFile)), {stop = true})
+        } catch {
+            return (Promise(error: error), {})
+        }
+    }
+
 }

@@ -48,17 +48,26 @@ extension OSCKit {
         }
     }
 
+    public func prepareTakePicture(format: FileFormat = .smallImage) -> Promise<Void> {
+        return async {
+            switch try await(self.apiVersion) {
+            case .version2(let session):
+                try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
+                try await(self.execute(command: CommandV1.setOptions(options: [format], sessionId: session.id)))
+            case .version2_1:
+                try await(self.execute(command: CommandV2.setOptions(options: [CaptureMode.image])))
+                try await(self.execute(command: CommandV2.setOptions(options: [format])))
+            }
+        }
+    }
+
     public func takePicture(format: FileFormat = .smallImage) -> Promise<String> {
         return async {
             let captureResponse: JSON
             switch try await(self.apiVersion) {
             case .version2(let session):
-                try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.image], sessionId: session.id)))
-                try await(self.execute(command: CommandV1.setOptions(options: [format], sessionId: session.id)))
                 captureResponse = try await(self.execute(command: CommandV1.takePicture(sessionId: session.id)))
             case .version2_1:
-                try await(self.execute(command: CommandV2.setOptions(options: [CaptureMode.image])))
-                try await(self.execute(command: CommandV2.setOptions(options: [format])))
                 captureResponse = try await(self.execute(command: CommandV2.takePicture))
             }
             let statusID = try captureResponse["id"].string !! SDKError.unableToParse(captureResponse)
