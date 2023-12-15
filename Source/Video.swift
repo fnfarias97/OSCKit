@@ -20,11 +20,11 @@ public enum VideoCaptureMode: String {
 extension OSCKit {
 
     public func startCapture(mode: VideoCaptureMode = .interval) -> Promise<JSON> {
-        return async {
-            switch try await(self.apiVersion) {
+        return `async` {
+            switch try `await`(self.apiVersion) {
             case .version2(let session):
-                try await(self.execute(command: CommandV1.setOptions(options: [CaptureMode.video], sessionId: session.id)))
-                return try await(self.execute(command: CommandV1._startCapture(sessionId: session.id, mode: mode)))
+                try `await`(self.execute(command: CommandV1.setOptions(options: [CaptureMode.video], sessionId: session.id)))
+                return try `await`(self.execute(command: CommandV1._startCapture(sessionId: session.id, mode: mode)))
             case .version2_1:
                 fatalError("Not implemented")
             }
@@ -33,31 +33,31 @@ extension OSCKit {
     }
 
     public func stopCapture() -> Promise<String> {
-        return async {
-            switch try await(self.apiVersion) {
+        return `async` {
+            switch try `await`(self.apiVersion) {
             case .version2(let session):
                 // Saving first item before capturing video
                 // This is due to the face THETA API v2.0 does not return a file URL when capture finishes
                 // https://developers.theta360.com/en/docs/v2.0/api_reference/commands/camera._stop_capture.html
-                let lastItem = try await(self.getLatestMediaItem(withPredicate: const(value: true)))
-                try await(self.execute(command: CommandV1._stopCapture(sessionId: session.id)))
+                let lastItem = try `await`(self.getLatestMediaItem(withPredicate: const(value: true)))
+                try `await`(self.execute(command: CommandV1._stopCapture(sessionId: session.id)))
                 // After stop capturing video, wait until it returns a new item with type being .video
-                let mediaItem = try await(self.getLatestMediaItem(withPredicate: {
+                let mediaItem = try `await`(self.getLatestMediaItem(withPredicate: {
                     $0.url != lastItem.url && $0.type ~= .video
                 }))
                 return mediaItem.url
             case .version2_1:
-                let result = try await(self.execute(command: CommandV2.stopCapture))
+                let result = try `await`(self.execute(command: CommandV2.stopCapture))
                 let statusID = try result["id"].string !! SDKError.unableToParse(result)
-                let statusResponse = try await(self.waitForStatus(id: statusID))
+                let statusResponse = try `await`(self.waitForStatus(id: statusID))
                 return try statusResponse["results"]["fileUris"].array?.first?.string !! SDKError.unableToParse(statusResponse)
             }
         }
     }
 
     public func getVideo(url: String, type: DownloadType = .full) -> Promise<URL> {
-        return async {
-            let device = try await(self.cachedDeviceInfo)
+        return `async` {
+            let device = try `await`(self.cachedDeviceInfo)
             let cacheKey = try (device.serial + url).addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) !! SDKError.unableToCreateVideoCacheKey
             let cacheFolder = try NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first.map({
                 URL(fileURLWithPath: $0)
@@ -67,11 +67,11 @@ extension OSCKit {
                 return fileURL
             }
             let data: Data
-            switch try await(self.apiVersion) {
+            switch try `await`(self.apiVersion) {
             case .version2:
-                data = try await(self.requestData(command: CommandV1._getVideo(fileUri: url, _type: type)))
+                data = try `await`(self.requestData(command: CommandV1._getVideo(fileUri: url, _type: type)))
             case .version2_1:
-                data = try await(self.requestData(url: url))
+                data = try `await`(self.requestData(url: url))
             }
             try data.write(to: fileURL)
             return fileURL

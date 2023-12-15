@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.module_name = 'OSCKit'
   s.dependency 'SwiftyyJSON'
   s.dependency 'PromiseKit'
-  s.dependency 'AwaitKit'
+  s.dependency 'AwaitKit', '~> 5.2.0'
 
 end

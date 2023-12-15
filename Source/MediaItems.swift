@@ -44,19 +44,19 @@ public struct MediaItem {
 
 extension OSCKit {
     public var listAllMediaItems: Promise<[MediaItem]> {
-        return async {
-            let all = try await(self.execute(command: CommandV1._listAll(entryCount: 100, detail: false)))
+        return `async` {
+            let all = try `await`(self.execute(command: CommandV1._listAll(entryCount: 100, detail: false)))
             let entries = try all["results"]["entries"].array !! SDKError.unableToParse(all)
             return try entries.map({try MediaItem(json: $0)})
         }
     }
 
     public func getLatestMediaItem(timeout: TimeInterval = 0, withPredicate predicate: @escaping (MediaItem) -> Bool) -> Promise<MediaItem> {
-        return async {
+        return `async` {
             if timeout < 0 {
                 throw SDKError.fetchTimeout
             }
-            let all = try await(self.execute(command: CommandV1._listAll(entryCount: 1, detail: true)))
+            let all = try `await`(self.execute(command: CommandV1._listAll(entryCount: 1, detail: true)))
             let json = try all["results"]["entries"].array !! SDKError.unableToParse(all)
             if let first = json.first {
                 let item = try MediaItem(json: first)
@@ -64,8 +64,8 @@ extension OSCKit {
                     return item
                 }
             }
-            try await(after(seconds: 2).asVoid())
-            return try await(self.getLatestMediaItem(timeout: timeout - 2, withPredicate: predicate))
+            try `await`(after(seconds: 2).asVoid())
+            return try `await`(self.getLatestMediaItem(timeout: timeout - 2, withPredicate: predicate))
         }
     }
 }

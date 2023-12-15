@@ -34,12 +34,12 @@ extension OSCKit {
                 case .version2_1: return Promise.value(current)
             }
         }
-        return async {
-            let device = try await(self.cachedDeviceInfo)
+        return `async` {
+            let device = try `await`(self.cachedDeviceInfo)
             if device.currentAPI == 2 { return APIVersion.version2_1 }
-            let session = try await(self.startSession)
+            let session = try `await`(self.startSession)
             if device.currentAPI == 1 && device.supportedAPI.contains(2) {
-                try await(self.execute(command: CommandV1.setOptions(options: [ClientVersion.v2_1], sessionId: session.id)))
+                try `await`(self.execute(command: CommandV1.setOptions(options: [ClientVersion.v2_1], sessionId: session.id)))
                 return APIVersion.version2_1
             }
             return APIVersion.version2(session)

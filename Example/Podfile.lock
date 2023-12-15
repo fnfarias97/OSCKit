@@ -1,7 +1,7 @@
 PODS:
   - AwaitKit (5.0.0):
     - PromiseKit (~> 6)
-  - OSC (1.0.1):
+  - OSC (3.0.1):
     - AwaitKit
     - PromiseKit
     - SwiftyyJSON
@@ -19,16 +19,22 @@ PODS:
 DEPENDENCIES:
   - OSC (from `../`)
 
+SPEC REPOS:
+  trunk:
+    - AwaitKit
+    - PromiseKit
+    - SwiftyyJSON
+
 EXTERNAL SOURCES:
   OSC:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   AwaitKit: d8a6e30eeb2da916630270b44636b31033388bd8
-  OSC: ff10e24b51802148baa9f9876225a359a2b978ce
+  OSC: 9ca3621b90b758d1b9577fd6859310dbf494e9ef
   PromiseKit: 625b1fc69944fc839503748101c5968cf54b527b
   SwiftyyJSON: ef3d37d200fec7a019c61f8da2a50e873c78dd05
 
 PODFILE CHECKSUM: c901d07026a93aee57e22d70e10a408b2e8482bc
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.14.3

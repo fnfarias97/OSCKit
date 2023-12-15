@@ -21,9 +21,9 @@ public struct DeviceInfo {
 
 extension OSCKit {
     public var deviceInfo: Promise<DeviceInfo> {
-        return async {
-            let info = try await(self.info)
-            let state = try await(self.state)
+        return `async` {
+            let info = try `await`(self.info)
+            let state = try `await`(self.state)
 
             let dI = DeviceInfo(
                 model: try info["model"].string !! SDKError.unableToParse(info),
@@ -58,14 +58,14 @@ extension OSCKit {
     public func watchTillLastFileChages() -> (Promise<String>, () -> Void) {
         var stop = false
         func recursion(currentURL: String?) -> Promise<String> {
-            return async {
+            return `async` {
                 if stop { throw SDKError.fetchTimeout }
-                try await(after(seconds: 2).asVoid())
-                let newFile = try await(self.latestFile)
+                try `await`(after(seconds: 2).asVoid())
+                let newFile = try `await`(self.latestFile)
                 if let newFile = newFile, newFile != currentURL {
                     return newFile
                 }
-                return try await(recursion(currentURL: newFile))
+                return try `await`(recursion(currentURL: newFile))
             }
         }
         return (self.latestFile.then({recursion(currentURL: $0)}), {stop = true})

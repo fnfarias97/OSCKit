@@ -100,7 +100,6 @@
 				0412921B1EC485C800763AF7 /* Frameworks */,
 				0412921C1EC485C800763AF7 /* Resources */,
 				133D1A4169D48553E27E36AB /* [CP] Embed Pods Frameworks */,
-				B24F3DADC546AE3C942C1009 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -166,7 +165,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-OSCKitExample/Pods-OSCKitExample-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-OSCKitExample/Pods-OSCKitExample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AwaitKit/AwaitKit.framework",
 				"${BUILT_PRODUCTS_DIR}/OSC/OSCKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
@@ -181,7 +180,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OSCKitExample/Pods-OSCKitExample-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OSCKitExample/Pods-OSCKitExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8C6B9F4223D1087ABF6F646C /* [CP] Check Pods Manifest.lock */ = {
@@ -200,21 +199,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B24F3DADC546AE3C942C1009 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-OSCKitExample/Pods-OSCKitExample-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

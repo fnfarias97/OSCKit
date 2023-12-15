@@ -93,9 +93,9 @@ extension OSCKit {
     }
 
     func requestData(command: Command) -> Promise<Data> {
-        return async {
+        return `async` {
             let request = self.assembleRequest(params: command.json)
-            return try await(URLSession.shared.dataTask(.promise, with: request).map({$0.data}))
+            return try `await`(URLSession.shared.dataTask(.promise, with: request).map({$0.data}))
         }
     }
 

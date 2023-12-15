@@ -50,31 +50,31 @@ extension OSCKit {
     }
 
     var startSession: Promise<Session> {
-        return async {
-            let response = try await(self.execute(command: CommandV1.startSession))
+        return `async` {
+            let response = try `await`(self.execute(command: CommandV1.startSession))
             let session = try Session(json: response)
             return session
         }
     }
 
     private func update(session: Session) -> Promise<Session> {
-        return async {
+        return `async` {
             do {
-                let response = try await(self.execute(command: CommandV1.updateSession(sessionId: session.id)))
+                let response = try `await`(self.execute(command: CommandV1.updateSession(sessionId: session.id)))
                 return try Session(json: response)
             } catch {
-                return try await(self.startSession)
+                return try `await`(self.startSession)
             }
         }
     }
 
     public func end() -> Promise<Void> {
-        return async {
-            switch try await(self.apiVersion) {
+        return `async` {
+            switch try `await`(self.apiVersion) {
             case .version2(let session):
-                try await(self.execute(command: CommandV1._finishWlan(sessionId: session.id)))
+                try `await`(self.execute(command: CommandV1._finishWlan(sessionId: session.id)))
             case .version2_1:
-                try await(self.execute(command: CommandV2._finishWlan))
+                try `await`(self.execute(command: CommandV2._finishWlan))
             }
         }
     }
